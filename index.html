@@ -6,20 +6,19 @@
 <title>Sabor do Caldo - Cardápio Digital</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #ffffff;
-  margin: 0;
-  padding-bottom: 140px;
-  color: #333;
-}
-
-/* ===== CORES ===== */
 :root {
   --vermelho: #C62828;
   --vermelho-escuro: #B71C1C;
   --verde: #2E7D32;
   --verde-escuro: #388E3C;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #ffffff;
+  margin: 0;
+  padding-bottom: 200px;
+  color: #333;
 }
 
 /* ===== CABEÇALHO ===== */
@@ -36,7 +35,7 @@ header h1 {
 }
 
 header p {
-  margin: 5px 0;
+  margin: 4px 0;
   font-size: 14px;
 }
 
@@ -86,7 +85,7 @@ header p {
 }
 
 /* ===== INPUTS ===== */
-input, textarea, select {
+input, textarea {
   width: 100%;
   padding: 10px;
   margin-top: 6px;
@@ -118,6 +117,24 @@ button.confirm:hover {
   background: var(--verde-escuro);
 }
 
+/* ===== CARRINHO ===== */
+.cart {
+  padding: 15px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.cart-total {
+  font-weight: bold;
+  color: var(--vermelho);
+  margin-top: 10px;
+}
+
 /* ===== RODAPÉ FIXO ===== */
 .footer {
   position: fixed;
@@ -127,12 +144,6 @@ button.confirm:hover {
   background: #fff;
   border-top: 2px solid var(--vermelho);
   padding: 15px;
-}
-
-.footer p {
-  margin: 5px 0;
-  font-weight: bold;
-  color: var(--vermelho);
 }
 </style>
 </head>
@@ -148,12 +159,12 @@ button.confirm:hover {
 
 <!-- ABAS -->
 <div class="tabs">
-  <button class="active" onclick="openTab('caldos')">Caldos</button>
-  <button onclick="openTab('lanches')">Lanches</button>
-  <button onclick="openTab('batata')">Batata</button>
-  <button onclick="openTab('combo')">Combo</button>
-  <button onclick="openTab('bebidas')">Bebidas</button>
-  <button onclick="openTab('adicionais')">Adicionais</button>
+  <button class="active" onclick="openTab('caldos', this)">Caldos</button>
+  <button onclick="openTab('lanches', this)">Lanches</button>
+  <button onclick="openTab('batata', this)">Batata</button>
+  <button onclick="openTab('combo', this)">Combo</button>
+  <button onclick="openTab('bebidas', this)">Bebidas</button>
+  <button onclick="openTab('adicionais', this)">Adicionais</button>
 </div>
 
 <!-- CONTEÚDO DAS ABAS (VAZIAS) -->
@@ -163,6 +174,15 @@ button.confirm:hover {
 <div id="combo" class="tab-content"></div>
 <div id="bebidas" class="tab-content"></div>
 <div id="adicionais" class="tab-content"></div>
+
+<!-- CARRINHO -->
+<div class="section">
+  <h2>Carrinho</h2>
+  <div class="cart" id="cartItems">
+    <p>Nenhum item adicionado.</p>
+  </div>
+  <div class="cart-total" id="cartTotal">Total: R$ 0,00</div>
+</div>
 
 <!-- DADOS DO CLIENTE -->
 <div class="section">
@@ -188,17 +208,48 @@ button.confirm:hover {
 
 <!-- RODAPÉ -->
 <div class="footer">
-  <p>Taxa de entrega: R$ 6,00</p>
+  <p><strong>Taxa de entrega:</strong> R$ 6,00</p>
   <button class="confirm" onclick="finalizarPedido()">Finalizar Pedido</button>
 </div>
 
 <script>
-function openTab(tabId) {
-  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+let carrinho = [];
+const taxaEntrega = 6.00;
 
+function openTab(tabId, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
-  event.target.classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ===== FUNÇÃO DE CARRINHO (PRONTA PARA USAR) ===== */
+function adicionarItem(nome, preco) {
+  carrinho.push({ nome, preco });
+  atualizarCarrinho();
+}
+
+function atualizarCarrinho() {
+  const cart = document.getElementById('cartItems');
+  cart.innerHTML = '';
+
+  let total = 0;
+
+  if (carrinho.length === 0) {
+    cart.innerHTML = '<p>Nenhum item adicionado.</p>';
+  } else {
+    carrinho.forEach(item => {
+      total += item.preco;
+      const div = document.createElement('div');
+      div.className = 'cart-item';
+      div.innerHTML = `<span>${item.nome}</span><span>R$ ${item.preco.toFixed(2)}</span>`;
+      cart.appendChild(div);
+    });
+  }
+
+  total += taxaEntrega;
+  document.getElementById('cartTotal').innerText =
+    `Total: R$ ${total.toFixed(2)}`;
 }
 
 function mostrarTroco(mostrar) {
@@ -207,7 +258,7 @@ function mostrarTroco(mostrar) {
 
 function finalizarPedido() {
   alert(
-    "Pedido registrado!\n\n" +
+    "Pedido registrado com sucesso!\n\n" +
     "Obrigado pelo pedido!"
   );
 }
