@@ -1,0 +1,136 @@
+<!DOCTYPE html>  <html lang="pt-br">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Sabor do Caldo - Pedidos</title>  <style>  
+body {  
+  font-family: Arial, sans-serif;  
+  padding: 10px;  
+}  
+  
+/* -------- IMPRESSÃO 58mm -------- */  
+@media print {  
+  body {  
+    margin: 0;  
+    padding: 0;  
+    width: 58mm;  
+    font-family: monospace;  
+    font-size: 11px;  
+  }  
+  
+  body * {  
+    display: none !important;  
+  }  
+  
+  #printArea, #printArea * {  
+    display: block !important;  
+  }  
+  
+  #printArea {  
+    width: 48mm;  
+    white-space: pre-wrap;  
+  }  
+}  
+</style>  </head>  <body>  <h2>Pedido</h2>  <input id="nome" placeholder="Nome"><br><br>
+<input id="endereco" placeholder="Endereço"><br><br>
+<input id="telefone" placeholder="Telefone"><br><br>
+
+<select id="pagamento">  
+  <option>Dinheiro</option>  
+  <option>Pix</option>  
+  <option>Cartão</option>  
+</select><br><br>  <button onclick="finalizarPedido()">FINALIZAR PEDIDO</button>
+
+<!-- Área invisível de impressão -->  <div id="printArea"></div>  <script>  
+// -------- DADOS DO PEDIDO --------  
+const TAXA_ENTREGA = 6.00;  
+  
+// Exemplo de carrinho (SUBSTITUI pelo seu real)  
+let carrinho = [  
+  {  
+    nome: "Caldo de Feijão",  
+    qtd: 1,  
+    preco: 14.90,  
+    adicionais: [  
+      { nome: "Bacon", preco: 4.00 },  
+      { nome: "Torresmo", preco: 4.00 }  
+    ]  
+  },  
+  {  
+    nome: "X-Bacon",  
+    qtd: 2,  
+    preco: 26.90,  
+    adicionais: [  
+      { nome: "Ovo", preco: 2.00 }  
+    ]  
+  }  
+];  
+  
+// -------- NÚMERO AUTOMÁTICO --------  
+function proximoPedido() {  
+  let n = localStorage.getItem("pedidoNumero") || 0;  
+  n++;  
+  localStorage.setItem("pedidoNumero", n);  
+  return String(n).padStart(4, "0");  
+}  
+  
+// -------- TEXTO ÚNICO (WHATS + IMPRESSÃO) --------  
+function gerarTextoPedido(numero) {  
+  let texto = "";  
+  let total = 0;  
+  
+  texto += "SABOR DO CALDO\n";  
+  texto += "Pedido #" + numero + "\n";  
+  texto += "----------------------------\n";  
+  
+  texto += "Cliente:\n";  
+  texto += nome.value + "\n";  
+  texto += endereco.value + "\n";  
+  texto += telefone.value + "\n\n";  
+  
+  texto += "Itens do Pedido:\n";  
+  
+  carrinho.forEach(item => {  
+    texto += `${item.qtd}x ${item.nome} - R$ ${(item.preco * item.qtd).toFixed(2)}\n`;  
+    total += item.preco * item.qtd;  
+  
+    if (item.adicionais && item.adicionais.length > 0) {  
+      item.adicionais.forEach(add => {  
+        texto += `  + ${add.nome} R$ ${add.preco.toFixed(2)}\n`;  
+        total += add.preco;  
+      });  
+    }  
+  });  
+  
+  texto += "\nTaxa de entrega: R$ " + TAXA_ENTREGA.toFixed(2) + "\n";  
+  texto += "----------------------------\n";  
+  texto += "Total: R$ " + (total + TAXA_ENTREGA).toFixed(2) + "\n";  
+  texto += "Pagamento: " + pagamento.value + "\n\n";  
+  
+  texto += new Date().toLocaleString() + "\n";  
+  texto += "Obrigado pelo pedido!\n";  
+  
+  return texto;  
+}  
+  
+// -------- WHATSAPP --------  
+function enviarWhatsapp(numero) {  
+  const texto = gerarTextoPedido(numero);  
+  const msg = encodeURIComponent(texto);  
+  window.open("https://wa.me/5535999711358?text=" + msg, "_blank");  
+}  
+  
+// -------- IMPRESSÃO --------  
+function imprimirPedido(numero) {  
+  const area = document.getElementById("printArea");  
+  area.innerText = gerarTextoPedido(numero);  
+  window.print();  
+}  
+  
+// -------- FINALIZAR --------  
+function finalizarPedido() {  
+  const numero = proximoPedido();  
+  imprimirPedido(numero);  
+  enviarWhatsapp(numero);  
+}  
+</script>  </body>  
+</html>
