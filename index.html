@@ -2,148 +2,87 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Sabor do Caldo - Cardápio Digital</title>
 
 <style>
-:root {
-  --vermelho: #C62828;
-  --vermelho-escuro: #B71C1C;
-  --verde: #2E7D32;
-  --verde-escuro: #388E3C;
+*{box-sizing:border-box}
+body{
+  font-family:Arial,sans-serif;
+  margin:0;
+  padding-bottom:80px;
+  background:#fff;
 }
-
-body {
-  font-family: Arial, sans-serif;
-  background: #ffffff;
-  margin: 0;
-  padding-bottom: 200px;
-  color: #333;
+:root{
+  --vermelho:#C62828;
+  --verde:#2E7D32;
 }
-
-/* ===== CABEÇALHO ===== */
-header {
-  background: var(--vermelho);
-  color: #fff;
-  padding: 15px;
-  text-align: center;
+header{
+  background:var(--vermelho);
+  color:#fff;
+  padding:15px;
+  text-align:center;
 }
-
-header h1 {
-  margin: 0;
-  font-size: 22px;
+.tabs{
+  display:flex;
+  overflow-x:auto;
+  border-bottom:2px solid var(--vermelho);
 }
-
-header p {
-  margin: 4px 0;
-  font-size: 14px;
+.tabs button{
+  flex:1;
+  padding:12px;
+  border:none;
+  background:#fff;
+  color:var(--vermelho);
+  font-weight:bold;
 }
-
-/* ===== ABAS ===== */
-.tabs {
-  display: flex;
-  overflow-x: auto;
-  background: #fff;
-  border-bottom: 2px solid var(--vermelho);
+.tabs button.active{
+  background:var(--vermelho);
+  color:#fff;
 }
-
-.tabs button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  background: #fff;
-  color: var(--vermelho);
-  font-weight: bold;
-  cursor: pointer;
+.tab-content{display:none;padding:10px}
+.tab-content.active{display:block}
+.item{
+  border-bottom:1px solid #ddd;
+  padding:10px 0;
 }
-
-.tabs button.active {
-  background: var(--vermelho);
-  color: #fff;
+.item h3{margin:0}
+.item p{margin:4px 0;font-size:14px}
+.controls{
+  display:flex;
+  gap:6px;
+  align-items:center;
 }
-
-/* ===== CONTEÚDO DAS ABAS ===== */
-.tab-content {
-  display: none;
-  padding: 20px;
+.controls button{
+  padding:6px 10px;
 }
-
-.tab-content.active {
-  display: block;
+.footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:10px;
+  background:#fff;
+  border-top:2px solid var(--vermelho);
 }
-
-/* ===== SEÇÕES ===== */
-.section {
-  padding: 15px;
-  border-bottom: 1px solid #ddd;
+.cart-btn{
+  width:100%;
+  padding:14px;
+  background:var(--verde);
+  color:#fff;
+  border:none;
+  font-size:16px;
+  font-weight:bold;
 }
-
-.section h2 {
-  margin-bottom: 10px;
-  color: var(--vermelho);
-  font-size: 18px;
+.section{padding:10px}
+.cart-item{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
 }
-
-/* ===== INPUTS ===== */
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  margin-top: 6px;
-  margin-bottom: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 15px;
-}
-
-/* ===== PAGAMENTO ===== */
-.payment-options label {
-  display: block;
-  margin-bottom: 8px;
-}
-
-/* ===== BOTÕES ===== */
-button.confirm {
-  width: 100%;
-  padding: 14px;
-  background: var(--verde);
-  color: #fff;
-  border: none;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button.confirm:hover {
-  background: var(--verde-escuro);
-}
-
-/* ===== CARRINHO ===== */
-.cart {
-  padding: 15px;
-}
-
-.cart-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
-
-.cart-total {
-  font-weight: bold;
-  color: var(--vermelho);
-  margin-top: 10px;
-}
-
-/* ===== RODAPÉ FIXO ===== */
-.footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border-top: 2px solid var(--vermelho);
-  padding: 15px;
+@media print{
+  body{width:58mm}
+  .tabs,.footer,.no-print{display:none}
 }
 </style>
 </head>
@@ -151,116 +90,145 @@ button.confirm:hover {
 <body>
 
 <header>
-  <h1>Sabor do Caldo</h1>
-  <p>Atendimento de quinta a domingo</p>
-  <p>Das 19:00 às 23:00</p>
-  <p>WhatsApp: (35) 99971-1358</p>
+  <h2>Sabor do Caldo</h2>
 </header>
 
-<!-- ABAS -->
 <div class="tabs">
-  <button class="active" onclick="openTab('caldos', this)">Caldos</button>
-  <button onclick="openTab('lanches', this)">Lanches</button>
-  <button onclick="openTab('batata', this)">Batata</button>
-  <button onclick="openTab('combo', this)">Combo</button>
-  <button onclick="openTab('bebidas', this)">Bebidas</button>
-  <button onclick="openTab('adicionais', this)">Adicionais</button>
+  <button class="active" onclick="openTab('caldos',this)">Caldos</button>
+  <button onclick="openTab('lanches',this)">Lanches</button>
+  <button onclick="openTab('batata',this)">Batata</button>
+  <button onclick="openTab('combo',this)">Combo</button>
+  <button onclick="openTab('bebidas',this)">Bebidas</button>
 </div>
 
-<!-- CONTEÚDO DAS ABAS (VAZIAS) -->
+<!-- ITENS -->
 <div id="caldos" class="tab-content active"></div>
 <div id="lanches" class="tab-content"></div>
 <div id="batata" class="tab-content"></div>
 <div id="combo" class="tab-content"></div>
 <div id="bebidas" class="tab-content"></div>
-<div id="adicionais" class="tab-content"></div>
 
 <!-- CARRINHO -->
-<div class="section">
-  <h2>Carrinho</h2>
-  <div class="cart" id="cartItems">
-    <p>Nenhum item adicionado.</p>
-  </div>
-  <div class="cart-total" id="cartTotal">Total: R$ 0,00</div>
+<div id="cart" class="section" style="display:none">
+  <h3>Carrinho</h3>
+  <div id="cartItems"></div>
+  <p><strong>Taxa:</strong> R$ 6,00</p>
+  <p><strong>Total:</strong> R$ <span id="total">0.00</span></p>
+  <button onclick="mostrarCheckout()">Finalizar Pedido</button>
 </div>
 
-<!-- DADOS DO CLIENTE -->
-<div class="section">
-  <h2>Dados do Cliente</h2>
-  <input type="text" id="nome" placeholder="Nome do cliente">
-  <input type="text" id="endereco" placeholder="Endereço completo">
-  <input type="tel" id="telefone" placeholder="Telefone">
+<!-- CHECKOUT -->
+<div id="checkout" class="section" style="display:none">
+  <h3>Dados do Cliente</h3>
+  <input id="nome" placeholder="Nome"><br>
+  <input id="endereco" placeholder="Endereço"><br>
+  <input id="telefone" placeholder="Telefone"><br>
+  <h3>Pagamento</h3>
+  <label><input type="radio" name="pag"> Dinheiro</label><br>
+  <label><input type="radio" name="pag"> Pix</label><br>
+  <label><input type="radio" name="pag"> Cartão</label><br><br>
+  <button onclick="mostrarResumo()">Avançar</button>
 </div>
 
-<!-- PAGAMENTO -->
-<div class="section">
-  <h2>Forma de Pagamento</h2>
-  <div class="payment-options">
-    <label><input type="radio" name="pagamento" value="Dinheiro" onclick="mostrarTroco(true)"> Dinheiro</label>
-    <label><input type="radio" name="pagamento" value="Pix" onclick="mostrarTroco(false)"> Pix</label>
-    <label><input type="radio" name="pagamento" value="Cartão" onclick="mostrarTroco(false)"> Cartão</label>
-  </div>
-
-  <div id="troco-area" style="display:none;">
-    <input type="text" id="troco" placeholder="Troco para quanto?">
-  </div>
+<!-- RESUMO -->
+<div id="resumo" class="section" style="display:none">
+  <h3>Pedido</h3>
+  <div id="nota"></div>
+  <button onclick="enviarWhats()">Enviar WhatsApp</button>
+  <button onclick="window.print()">Imprimir</button>
 </div>
 
-<!-- RODAPÉ -->
-<div class="footer">
-  <p><strong>Taxa de entrega:</strong> R$ 6,00</p>
-  <button class="confirm" onclick="finalizarPedido()">Finalizar Pedido</button>
+<div class="footer no-print">
+  <button class="cart-btn" onclick="toggleCart()">Carrinho</button>
 </div>
 
 <script>
-let carrinho = [];
-const taxaEntrega = 6.00;
+let pedido=1;
+let carrinho=[];
+const taxa=6;
 
-function openTab(tabId, btn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
+const itens=[
+  {aba:'caldos',nome:'Caldo de Feijão',desc:'Caldo quente tradicional',preco:12},
+  {aba:'lanches',nome:'X-Burger',desc:'Hambúrguer simples',preco:15},
+  {aba:'batata',nome:'Batata Frita',desc:'Porção média',preco:10},
+  {aba:'combo',nome:'Combo Burger',desc:'Lanche + batata',preco:22},
+  {aba:'bebidas',nome:'Refrigerante',desc:'Lata 350ml',preco:6}
+];
+
+itens.forEach(i=>{
+  const div=document.createElement('div');
+  div.className='item';
+  div.innerHTML=`
+    <h3>${i.nome}</h3>
+    <p>${i.desc}</p>
+    <p><strong>R$ ${i.preco.toFixed(2)}</strong></p>
+    <div class="controls">
+      <button onclick="add('${i.nome}',${i.preco})">Adicionar ao carrinho</button>
+    </div>`;
+  document.getElementById(i.aba).appendChild(div);
+});
+
+function openTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
   btn.classList.add('active');
 }
 
-/* ===== FUNÇÃO DE CARRINHO (PRONTA PARA USAR) ===== */
-function adicionarItem(nome, preco) {
-  carrinho.push({ nome, preco });
-  atualizarCarrinho();
+function add(nome,preco){
+  carrinho.push({nome,preco});
+  renderCart();
 }
 
-function atualizarCarrinho() {
-  const cart = document.getElementById('cartItems');
-  cart.innerHTML = '';
-
-  let total = 0;
-
-  if (carrinho.length === 0) {
-    cart.innerHTML = '<p>Nenhum item adicionado.</p>';
-  } else {
-    carrinho.forEach(item => {
-      total += item.preco;
-      const div = document.createElement('div');
-      div.className = 'cart-item';
-      div.innerHTML = `<span>${item.nome}</span><span>R$ ${item.preco.toFixed(2)}</span>`;
-      cart.appendChild(div);
-    });
-  }
-
-  total += taxaEntrega;
-  document.getElementById('cartTotal').innerText =
-    `Total: R$ ${total.toFixed(2)}`;
+function toggleCart(){
+  document.getElementById('cart').style.display='block';
 }
 
-function mostrarTroco(mostrar) {
-  document.getElementById('troco-area').style.display = mostrar ? 'block' : 'none';
+function renderCart(){
+  const c=document.getElementById('cartItems');
+  c.innerHTML='';
+  let total=0;
+  carrinho.forEach((i,idx)=>{
+    total+=i.preco;
+    c.innerHTML+=`
+      <div class="cart-item">
+        <span>${i.nome}</span>
+        <span>
+          R$ ${i.preco.toFixed(2)}
+          <button onclick="remover(${idx})">X</button>
+        </span>
+      </div>`;
+  });
+  total+=taxa;
+  document.getElementById('total').innerText=total.toFixed(2);
 }
 
-function finalizarPedido() {
-  alert(
-    "Pedido registrado com sucesso!\n\n" +
-    "Obrigado pelo pedido!"
-  );
+function remover(i){
+  carrinho.splice(i,1);
+  renderCart();
+}
+
+function mostrarCheckout(){
+  document.getElementById('checkout').style.display='block';
+}
+
+function mostrarResumo(){
+  const data=new Date();
+  let html=`<p><strong>Sabor do Caldo</strong></p>
+  <p>Pedido Nº ${pedido++}</p>
+  <p>${data.toLocaleDateString()} ${data.toLocaleTimeString()}</p>
+  <p>${nome.value}</p><hr>`;
+  carrinho.forEach(i=>{
+    html+=`${i.nome} - R$ ${i.preco.toFixed(2)}<br>`;
+  });
+  html+=`<hr>Taxa: R$ 6,00<br><strong>Total: R$ ${document.getElementById('total').innerText}</strong><br><br>Obrigado pelo pedido!`;
+  document.getElementById('nota').innerHTML=html;
+  document.getElementById('resumo').style.display='block';
+}
+
+function enviarWhats(){
+  const txt=document.getElementById('nota').innerText;
+  window.open(`https://wa.me/5535999711358?text=${encodeURIComponent(txt)}`);
 }
 </script>
 
