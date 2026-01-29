@@ -1,136 +1,217 @@
-<!DOCTYPE html>  <html lang="pt-br">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Sabor do Caldo - Pedidos</title>  <style>  
-body {  
-  font-family: Arial, sans-serif;  
-  padding: 10px;  
-}  
-  
-/* -------- IMPRESSÃO 58mm -------- */  
-@media print {  
-  body {  
-    margin: 0;  
-    padding: 0;  
-    width: 58mm;  
-    font-family: monospace;  
-    font-size: 11px;  
-  }  
-  
-  body * {  
-    display: none !important;  
-  }  
-  
-  #printArea, #printArea * {  
-    display: block !important;  
-  }  
-  
-  #printArea {  
-    width: 48mm;  
-    white-space: pre-wrap;  
-  }  
-}  
-</style>  </head>  <body>  <h2>Pedido</h2>  <input id="nome" placeholder="Nome"><br><br>
-<input id="endereco" placeholder="Endereço"><br><br>
-<input id="telefone" placeholder="Telefone"><br><br>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sabor do Caldo - Cardápio Digital</title>
 
-<select id="pagamento">  
-  <option>Dinheiro</option>  
-  <option>Pix</option>  
-  <option>Cartão</option>  
-</select><br><br>  <button onclick="finalizarPedido()">FINALIZAR PEDIDO</button>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #ffffff;
+  margin: 0;
+  padding-bottom: 140px;
+  color: #333;
+}
 
-<!-- Área invisível de impressão -->  <div id="printArea"></div>  <script>  
-// -------- DADOS DO PEDIDO --------  
-const TAXA_ENTREGA = 6.00;  
-  
-// Exemplo de carrinho (SUBSTITUI pelo seu real)  
-let carrinho = [  
-  {  
-    nome: "Caldo de Feijão",  
-    qtd: 1,  
-    preco: 14.90,  
-    adicionais: [  
-      { nome: "Bacon", preco: 4.00 },  
-      { nome: "Torresmo", preco: 4.00 }  
-    ]  
-  },  
-  {  
-    nome: "X-Bacon",  
-    qtd: 2,  
-    preco: 26.90,  
-    adicionais: [  
-      { nome: "Ovo", preco: 2.00 }  
-    ]  
-  }  
-];  
-  
-// -------- NÚMERO AUTOMÁTICO --------  
-function proximoPedido() {  
-  let n = localStorage.getItem("pedidoNumero") || 0;  
-  n++;  
-  localStorage.setItem("pedidoNumero", n);  
-  return String(n).padStart(4, "0");  
-}  
-  
-// -------- TEXTO ÚNICO (WHATS + IMPRESSÃO) --------  
-function gerarTextoPedido(numero) {  
-  let texto = "";  
-  let total = 0;  
-  
-  texto += "SABOR DO CALDO\n";  
-  texto += "Pedido #" + numero + "\n";  
-  texto += "----------------------------\n";  
-  
-  texto += "Cliente:\n";  
-  texto += nome.value + "\n";  
-  texto += endereco.value + "\n";  
-  texto += telefone.value + "\n\n";  
-  
-  texto += "Itens do Pedido:\n";  
-  
-  carrinho.forEach(item => {  
-    texto += `${item.qtd}x ${item.nome} - R$ ${(item.preco * item.qtd).toFixed(2)}\n`;  
-    total += item.preco * item.qtd;  
-  
-    if (item.adicionais && item.adicionais.length > 0) {  
-      item.adicionais.forEach(add => {  
-        texto += `  + ${add.nome} R$ ${add.preco.toFixed(2)}\n`;  
-        total += add.preco;  
-      });  
-    }  
-  });  
-  
-  texto += "\nTaxa de entrega: R$ " + TAXA_ENTREGA.toFixed(2) + "\n";  
-  texto += "----------------------------\n";  
-  texto += "Total: R$ " + (total + TAXA_ENTREGA).toFixed(2) + "\n";  
-  texto += "Pagamento: " + pagamento.value + "\n\n";  
-  
-  texto += new Date().toLocaleString() + "\n";  
-  texto += "Obrigado pelo pedido!\n";  
-  
-  return texto;  
-}  
-  
-// -------- WHATSAPP --------  
-function enviarWhatsapp(numero) {  
-  const texto = gerarTextoPedido(numero);  
-  const msg = encodeURIComponent(texto);  
-  window.open("https://wa.me/5535999711358?text=" + msg, "_blank");  
-}  
-  
-// -------- IMPRESSÃO --------  
-function imprimirPedido(numero) {  
-  const area = document.getElementById("printArea");  
-  area.innerText = gerarTextoPedido(numero);  
-  window.print();  
-}  
-  
-// -------- FINALIZAR --------  
-function finalizarPedido() {  
-  const numero = proximoPedido();  
-  imprimirPedido(numero);  
-  enviarWhatsapp(numero);  
-}  
-</script>  </body>  
+/* ===== CORES ===== */
+:root {
+  --vermelho: #C62828;
+  --vermelho-escuro: #B71C1C;
+  --verde: #2E7D32;
+  --verde-escuro: #388E3C;
+}
+
+/* ===== CABEÇALHO ===== */
+header {
+  background: var(--vermelho);
+  color: #fff;
+  padding: 15px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+header p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* ===== ABAS ===== */
+.tabs {
+  display: flex;
+  overflow-x: auto;
+  background: #fff;
+  border-bottom: 2px solid var(--vermelho);
+}
+
+.tabs button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: #fff;
+  color: var(--vermelho);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background: var(--vermelho);
+  color: #fff;
+}
+
+/* ===== CONTEÚDO DAS ABAS ===== */
+.tab-content {
+  display: none;
+  padding: 20px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ===== SEÇÕES ===== */
+.section {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.section h2 {
+  margin-bottom: 10px;
+  color: var(--vermelho);
+  font-size: 18px;
+}
+
+/* ===== INPUTS ===== */
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 15px;
+}
+
+/* ===== PAGAMENTO ===== */
+.payment-options label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ===== BOTÕES ===== */
+button.confirm {
+  width: 100%;
+  padding: 14px;
+  background: var(--verde);
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.confirm:hover {
+  background: var(--verde-escuro);
+}
+
+/* ===== RODAPÉ FIXO ===== */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 2px solid var(--vermelho);
+  padding: 15px;
+}
+
+.footer p {
+  margin: 5px 0;
+  font-weight: bold;
+  color: var(--vermelho);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Sabor do Caldo</h1>
+  <p>Atendimento de quinta a domingo</p>
+  <p>Das 19:00 às 23:00</p>
+  <p>WhatsApp: (35) 99971-1358</p>
+</header>
+
+<!-- ABAS -->
+<div class="tabs">
+  <button class="active" onclick="openTab('caldos')">Caldos</button>
+  <button onclick="openTab('lanches')">Lanches</button>
+  <button onclick="openTab('batata')">Batata</button>
+  <button onclick="openTab('combo')">Combo</button>
+  <button onclick="openTab('bebidas')">Bebidas</button>
+  <button onclick="openTab('adicionais')">Adicionais</button>
+</div>
+
+<!-- CONTEÚDO DAS ABAS (VAZIAS) -->
+<div id="caldos" class="tab-content active"></div>
+<div id="lanches" class="tab-content"></div>
+<div id="batata" class="tab-content"></div>
+<div id="combo" class="tab-content"></div>
+<div id="bebidas" class="tab-content"></div>
+<div id="adicionais" class="tab-content"></div>
+
+<!-- DADOS DO CLIENTE -->
+<div class="section">
+  <h2>Dados do Cliente</h2>
+  <input type="text" id="nome" placeholder="Nome do cliente">
+  <input type="text" id="endereco" placeholder="Endereço completo">
+  <input type="tel" id="telefone" placeholder="Telefone">
+</div>
+
+<!-- PAGAMENTO -->
+<div class="section">
+  <h2>Forma de Pagamento</h2>
+  <div class="payment-options">
+    <label><input type="radio" name="pagamento" value="Dinheiro" onclick="mostrarTroco(true)"> Dinheiro</label>
+    <label><input type="radio" name="pagamento" value="Pix" onclick="mostrarTroco(false)"> Pix</label>
+    <label><input type="radio" name="pagamento" value="Cartão" onclick="mostrarTroco(false)"> Cartão</label>
+  </div>
+
+  <div id="troco-area" style="display:none;">
+    <input type="text" id="troco" placeholder="Troco para quanto?">
+  </div>
+</div>
+
+<!-- RODAPÉ -->
+<div class="footer">
+  <p>Taxa de entrega: R$ 6,00</p>
+  <button class="confirm" onclick="finalizarPedido()">Finalizar Pedido</button>
+</div>
+
+<script>
+function openTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function mostrarTroco(mostrar) {
+  document.getElementById('troco-area').style.display = mostrar ? 'block' : 'none';
+}
+
+function finalizarPedido() {
+  alert(
+    "Pedido registrado!\n\n" +
+    "Obrigado pelo pedido!"
+  );
+}
+</script>
+
+</body>
 </html>
